@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation API - Frontend</title>
+</head>
+<body>
+    <h1>Lista produktów</h1>
+    <button onclick="getProducts()">Pobierz produkty</button>
+    <ul id="product-list"></ul>
+
+    <h2>Zaproponuj cenę</h2>
+    <input type="number" id="product-id" placeholder="ID produktu">
+    <input type="number" id="price" placeholder="Twoja propozycja ceny">
+    <button onclick="proposePrice()">Wyślij propozycję</button>
+
+    <script>
+        const apiBaseUrl = "https://localhost:7258/api";
+
+        async function getProducts() {
+            const response = await fetch(`${apiBaseUrl}/product`);
+            const products = await response.json();
+
+            const productList = document.getElementById("product-list");
+            productList.innerHTML = "";
+
+            products.forEach(product => {
+                const li = document.createElement("li");
+                li.textContent = `${product.id}: ${product.name} - ${product.price} zł`;
+                productList.appendChild(li);
+            });
+        }
+
+        async function proposePrice() {
+            const productId = document.getElementById("product-id").value;
+            const price = document.getElementById("price").value;
+
+            const response = await fetch(`${apiBaseUrl}/negotiation/propose`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId: parseInt(productId), proposedPrice: parseFloat(price) })
+            });
+
+            if (response.ok) {
+                alert("Cena zaproponowana!");
+            } else {
+                alert("Błąd podczas składania propozycji.");
+            }
+        }
+    </script>
+</body>
+</html>
