@@ -44,7 +44,7 @@
   {
     "ContainingType": "NegotiationOfferController",
     "Method": "SendOffer",
-    "RelativePath": "api/NegotiationOffer/send",
+    "RelativePath": "api/NegotiationOffer",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

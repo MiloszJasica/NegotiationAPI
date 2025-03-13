@@ -63,7 +63,7 @@
         }
       }
     },
-    "/api/NegotiationOffer/send": {
+    "/api/NegotiationOffer": {
       "post": {
         "tags": [
           "NegotiationOffer"

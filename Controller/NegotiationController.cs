@@ -1,55 +1,36 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
 public class NegotiationController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly INegotiationService _negotiationService;
 
-    public NegotiationController(ApplicationDbContext context)
+    public NegotiationController(INegotiationService negotiationService)
     {
-        _context = context;
+        _negotiationService = negotiationService;
     }
 
     [HttpGet]
     [Authorize]
-    public IActionResult GetNegotiationOffers()
+    public async Task<IActionResult> GetNegotiationOffers()
     {
-        var offers = _context.NegotiationOffers
-            .Where(o => o.Status == "Pending")
-            .ToList();
-
-        return Ok(offers);
+        return await _negotiationService.GetNegotiationOffersAsync();
     }
 
     [HttpPost("reject/{id}")]
     [Authorize]
-    public IActionResult RejectOffer(int id)
+    public async Task<IActionResult> RejectOffer(int id)
     {
-        var offer = _context.NegotiationOffers.Find(id);
-        if (offer == null) return NotFound("Offer does not exist.");
-        if (offer.Status != "Pending") return BadRequest("Offer has already been considered.");
-
-        offer.Status = "Rejected";
-        offer.RespondedAt = DateTime.UtcNow;
-        _context.SaveChanges();
-
-        return Ok("Offer rejected.");
+        return await _negotiationService.RejectOfferAsync(id);
     }
 
     [HttpPost("accept/{id}")]
     [Authorize]
-    public IActionResult AcceptOffer(int id)
+    public async Task<IActionResult> AcceptOffer(int id)
     {
-        var offer = _context.NegotiationOffers.Find(id);
-        if (offer == null) return NotFound("Oferta does not exist.");
-        if (offer.Status != "Pending") return BadRequest("Offer has already been considered.");
-
-        offer.Status = "Accepted";
-        offer.RespondedAt = DateTime.UtcNow;
-        _context.SaveChanges();
-
-        return Ok("Offer accepted.");
+        return await _negotiationService.AcceptOfferAsync(id);
     }
 }
